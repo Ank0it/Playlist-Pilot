@@ -667,9 +667,9 @@ const PlaylistViewer = () => {
   return (
     <div className="min-h-screen bg-background">
       {renderNavbar()}
-      <div className="flex min-h-[calc(100vh-64px)]">
+      <div className="lg:grid lg:grid-cols-[24rem,1fr] gap-0 p-4 lg:p-6">
         {/* Sidebar - Playlist */}
-        <div className="w-96 bg-gradient-card border-r border-border overflow-hidden flex flex-col">
+        <div className="bg-gradient-card border border-border rounded-xl lg:rounded-none lg:border-0 lg:border-r overflow-hidden flex flex-col lg:h-[calc(100vh-96px)]">
           <div className="p-6 border-b border-border">
             <h2 className="text-xl font-bold mb-2 line-clamp-2">{playlist.title}</h2>
             <p className="text-sm text-muted-foreground mb-3">{playlist.channelTitle}</p>
@@ -760,12 +760,12 @@ const PlaylistViewer = () => {
         </div>
 
         {/* Main Content - Video Player */}
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 bg-black relative" ref={playerRef}>
-            <div className="aspect-video w-full h-full flex items-center justify-center">
+        <div className="flex flex-col gap-4 lg:gap-6">
+          <div className="bg-black rounded-xl border border-border shadow-video" ref={playerRef}>
+            <div className="aspect-video w-full max-w-6xl mx-auto">
               <iframe
                 src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1&rel=0&enablejsapi=1`}
-                className="w-full h-full"
+                className="w-full h-full rounded-md"
                 frameBorder="0"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
@@ -774,7 +774,7 @@ const PlaylistViewer = () => {
             </div>
           </div>
 
-          <div className="p-6 bg-gradient-card border-t border-border">
+          <div className="p-6 bg-gradient-card border border-border rounded-xl">
             <div className="flex items-center justify-between mb-4">
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl font-bold mb-2 line-clamp-2">{currentVideo.title}</h1>
