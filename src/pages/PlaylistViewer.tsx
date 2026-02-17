@@ -252,6 +252,7 @@ const PlaylistViewer = () => {
   const [history, setHistory] = useState<PlaylistHistoryEntry[]>([]);
   const [navVisible, setNavVisible] = useState(true);
   const hideNavTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const videoRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { toast } = useToast();
   const playerRef = useRef<HTMLIFrameElement>(null);
   const navigate = useNavigate();
@@ -398,6 +399,17 @@ const PlaylistViewer = () => {
   useEffect(() => {
     localStorage.setItem('youtube-playlist-progress', JSON.stringify(progress));
   }, [progress]);
+
+  // Smooth scroll to active video in the list
+  useEffect(() => {
+    if (!playlist) return;
+    const current = playlist.videos[currentVideoIndex];
+    if (!current) return;
+    const el = videoRefs.current[current.id];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [currentVideoIndex, playlist]);
 
   const extractPlaylistId = (url: string) => {
     const regex = /[?&]list=([^#&?]*)/;
@@ -738,12 +750,24 @@ const PlaylistViewer = () => {
               {playlist.videos.map((video, index) => {
                 const videoProgress = getVideoProgress(video.id);
                 const isActive = index === currentVideoIndex;
+                const videoDurationSeconds = videoProgress.duration || parseDurationToSeconds(video.duration || '0');
+                const watchedSeconds = videoProgress.completed
+                  ? videoDurationSeconds
+                  : Math.min(videoProgress.currentTime, videoDurationSeconds || videoProgress.currentTime);
+                const watchedPercent = videoDurationSeconds > 0
+                  ? Math.min(100, (watchedSeconds / videoDurationSeconds) * 100)
+                  : 0;
                 
                 return (
                   <Card
                     key={video.id}
-                    className={`cursor-pointer transition-smooth hover:bg-video-card-hover ${
-                      isActive ? 'bg-accent/10 border-accent' : 'bg-video-card border-border'
+                    ref={(el) => {
+                      if (el) videoRefs.current[video.id] = el;
+                    }}
+                    className={`relative cursor-pointer transition-smooth hover:bg-video-card-hover overflow-hidden ${
+                      isActive
+                        ? 'bg-gradient-to-br from-accent/10 via-video-card to-background border-accent shadow-glow ring-1 ring-accent/30'
+                        : 'bg-video-card border-border'
                     }`}
                     onClick={() => selectVideo(index)}
                   >
@@ -758,11 +782,18 @@ const PlaylistViewer = () => {
                           <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded">
                             {formatDuration(video.duration)}
                           </div>
-                          {videoProgress.completed && (
-                            <div className="absolute top-1 left-1 bg-progress-watched text-white text-xs px-1 rounded">
-                              ✓
+                          <div className="absolute top-1 left-1">
+                            <div
+                              className="h-6 w-6 rounded-full grid place-items-center text-[10px] font-semibold text-white shadow-sm"
+                              style={{
+                                backgroundImage: `conic-gradient(hsl(var(--accent)) ${watchedPercent}%, hsl(var(--border)) ${watchedPercent}% 100%)`
+                              }}
+                            >
+                              <span className="h-4 w-4 rounded-full bg-black/70 grid place-items-center">
+                                {videoProgress.completed ? '✓' : `${Math.round(watchedPercent)}%`}
+                              </span>
                             </div>
-                          )}
+                          </div>
                         </div>
                         
                         <div className="flex-1 min-w-0">
