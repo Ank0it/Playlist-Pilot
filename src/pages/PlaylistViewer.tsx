@@ -94,11 +94,11 @@ const buildUrl = (base: string, params: Record<string, string | undefined>) => {
   return url.toString();
 };
 
-const fetchJson = async <T>(url: string) => {
+const fetchJson = async <T,>(url: string): Promise<T> => {
   const response = await fetch(url);
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({} as { error?: { message?: string } }));
-    const apiMessage = (errorBody as any)?.error?.message;
+    const apiMessage = (errorBody as { error?: { message?: string } })?.error?.message;
     throw new Error(apiMessage || `YouTube API error (${response.status})`);
   }
   return response.json() as Promise<T>;
@@ -210,9 +210,35 @@ const fetchPlaylistFromYouTube = async (playlistId: string): Promise<PlaylistDat
 };
 
 // Declare YouTube API types
+interface YouTubePlayer {
+  getCurrentTime(): number;
+  getDuration(): number;
+  destroy(): void;
+}
+
+interface YouTubePlayerState {
+  PLAYING: number;
+  ENDED: number;
+}
+
+interface YouTubePlayerStateChangeEvent {
+  data: number;
+}
+
+interface YouTubePlayerOptions {
+  events?: {
+    onStateChange?: (event: YouTubePlayerStateChangeEvent) => void;
+  };
+}
+
+interface YouTubeAPI {
+  Player: new (element: HTMLIFrameElement | string, options: YouTubePlayerOptions) => YouTubePlayer;
+  PlayerState: YouTubePlayerState;
+}
+
 declare global {
   interface Window {
-    YT: any;
+    YT: YouTubeAPI;
     onYouTubeIframeAPIReady: () => void;
   }
 }
@@ -247,7 +273,7 @@ const PlaylistViewer = () => {
 
     const currentVideo = playlist.videos[currentVideoIndex];
     let progressInterval: NodeJS.Timeout;
-    let player: any = null;
+    let player: YouTubePlayer | null = null;
 
     const initializePlayer = () => {
       if (window.YT && window.YT.Player && playerRef.current) {
@@ -256,7 +282,7 @@ const PlaylistViewer = () => {
         if (iframe) {
           player = new window.YT.Player(iframe, {
             events: {
-              onStateChange: (event: any) => {
+              onStateChange: (event: YouTubePlayerStateChangeEvent) => {
                 if (event.data === window.YT.PlayerState.PLAYING) {
                   // Start tracking progress
                   progressInterval = setInterval(() => {
