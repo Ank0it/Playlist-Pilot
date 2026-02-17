@@ -1,27 +1,51 @@
 # Playlist Pilot
 
-Playlist Pilot is a focused web app for tracking progress while watching YouTube playlists. Paste a playlist URL, load the videos, and the app tracks what you have watched.
+Watch smarter, not longer. Playlist Pilot is a focused web client for pulling in any YouTube playlist, playing it with a clean UI, and tracking what you have finished.
 
-## Features
+## Why it feels good
+- Crisp, responsive layout built with Tailwind and shadcn/ui primitives
+- Focused player view with progress at a glance
+- Smooth state flows powered by React + TypeScript + Vite
+- Works in the browser with local persistence; no extra accounts
 
-- Playlist fetch via the YouTube Data API (client-side).
-- Embedded YouTube player with auto-advance.
-- Progress tracking per video and overall.
-- Local persistence in the browser.
+## Core features
+- Paste a YouTube playlist URL and load titles, durations, and ordering
+- Embedded player with simple controls and watch-state tracking
+- Per-video and overall progress indicators
+- Optional Supabase edge function to proxy playlist fetches
 
-## Tech Stack
+## Frontend stack
+- React + TypeScript (Vite)
+- Tailwind CSS with shadcn/ui components
+- Supabase Edge Functions (optional backend helper)
 
-- React + Vite + TypeScript
-- Tailwind CSS + minimal shadcn/ui primitives
-- Supabase edge function for YouTube playlist fetch
+## Getting started
+1) Install dependencies
+```
+npm install
+```
+2) Add environment
+```
+VITE_YOUTUBE_API_KEY=your_youtube_data_api_v3_key
+```
+3) Run the dev server
+```
+npm run dev
+```
+4) Paste a playlist URL and start watching
 
-## Usage
+## Scripts
+- `npm run dev` — start Vite dev server
+- `npm run build` — production build
+- `npm run preview` — preview the production build
+- `npm run lint` — lint the project
 
-1. Add `VITE_YOUTUBE_API_KEY` to your `.env` (YouTube Data API v3 key).
-2. Start the app with `npm run dev`.
-3. Paste a YouTube playlist URL.
-4. Watch videos and track progress.
+## Architecture & flow
+- Client: Vite + React + TypeScript renders the UI, manages playlist state, and drives the YouTube iframe/player.
+- Data fetch: by default, the browser calls the YouTube Data API v3 with `VITE_YOUTUBE_API_KEY` to pull playlist items (title, id, duration, order).
+- Optional proxy: a Supabase Edge Function can sit between the client and YouTube to hide keys or add rate-limit logic; the client swaps the fetch URL accordingly.
+- Playback loop: when you select a video, the embedded player loads it, listens for end events, and advances to the next item while updating local progress.
+- Persistence: watch-state is cached locally so you keep progress between sessions without signing in.
 
-## Notes on Supabase
-
-The UI now calls the YouTube Data API directly with your `VITE_YOUTUBE_API_KEY`. The Supabase Edge Function remains in the repo if you prefer to proxy requests through Supabase; deploy it with your key if you choose that path.
+## Supabase option
+The UI can hit YouTube directly with `VITE_YOUTUBE_API_KEY`. If you prefer to hide the key server-side, deploy the provided Supabase Edge Function and point the client to it.
