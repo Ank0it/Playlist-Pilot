@@ -479,12 +479,36 @@ const PlaylistViewer = () => {
     return progress[videoId] || { videoId, currentTime: 0, duration: 0, completed: false };
   };
 
+  const parseDurationToSeconds = (duration: string) => {
+    const parts = duration.split(':').map((part) => Number(part.trim()));
+    if (parts.length === 3) {
+      const [h, m, s] = parts;
+      return (h || 0) * 3600 + (m || 0) * 60 + (s || 0);
+    }
+    if (parts.length === 2) {
+      const [m, s] = parts;
+      return (m || 0) * 60 + (s || 0);
+    }
+    return parts[0] || 0;
+  };
+
   const getPlaylistProgress = () => {
     if (!playlist) return 0;
-    const completedVideos = playlist.videos.filter(video => 
-      getVideoProgress(video.id).completed
-    ).length;
-    return (completedVideos / playlist.videos.length) * 100;
+
+    const totalDurationSeconds = playlist.videos.reduce((acc, video) => {
+      return acc + parseDurationToSeconds(video.duration || '0');
+    }, 0);
+
+    if (totalDurationSeconds <= 0) return 0;
+
+    const watchedSeconds = playlist.videos.reduce((acc, video) => {
+      const vp = getVideoProgress(video.id);
+      const videoDuration = vp.duration || parseDurationToSeconds(video.duration || '0');
+      const watched = vp.completed ? videoDuration : Math.min(vp.currentTime, videoDuration || vp.currentTime);
+      return acc + (Number.isFinite(watched) ? watched : 0);
+    }, 0);
+
+    return (watchedSeconds / totalDurationSeconds) * 100;
   };
 
   const formatDuration = (duration: string) => {
@@ -770,7 +794,7 @@ const PlaylistViewer = () => {
                           {videoProgress.currentTime > 0 && !videoProgress.completed && (
                             <div className="mt-2">
                               <Progress 
-                                value={(videoProgress.currentTime / videoProgress.duration) * 100} 
+                                value={(videoProgress.currentTime / (videoProgress.duration || parseDurationToSeconds(video.duration) || 1)) * 100} 
                                 className="h-1" 
                               />
                             </div>
