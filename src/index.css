@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Base colors - YouTube-inspired dark theme */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* YouTube red with modern twist */
+    --primary: 0 65% 58%;
+    --primary-foreground: 0 0% 98%;
+
+    /* Dark surface colors */
+    --secondary: 240 6% 10%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 6% 10%;
+    --muted-foreground: 240 5% 64.9%;
+
+    /* Accent for progress */
+    --accent: 199 88% 52%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 6% 20%;
+    --input: 240 6% 20%;
+    --ring: 199 88% 52%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar colors */
+    --sidebar-background: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 199 88% 52%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 6% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 6% 20%;
+    --sidebar-ring: 199 88% 52%;
+
+    /* Custom YouTube Viewer tokens */
+    --video-card: 240 6% 10%;
+    --video-card-hover: 240 6% 15%;
+    --progress-bg: 240 6% 20%;
+    --progress-fill: 199 88% 52%;
+    --progress-watched: 0 65% 58%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(199 88% 52%), hsl(0 65% 58%));
+    --gradient-card: linear-gradient(145deg, hsl(240 6% 10%), hsl(240 6% 6%));
+    --gradient-hero: linear-gradient(135deg, hsl(240 10% 3.9%) 0%, hsl(240 6% 10%) 100%);
+    
+    /* Shadows */
+    --shadow-card: 0 4px 20px -2px hsl(240 10% 3.9% / 0.8);
+    --shadow-video: 0 8px 32px -4px hsl(240 10% 3.9% / 0.9);
+    --shadow-glow: 0 0 20px hsl(199 88% 52% / 0.3);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .dark {
+    /* Dark mode is our primary theme */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 65% 58%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 6% 10%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 6% 10%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 199 88% 52%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 20%;
+    --input: 240 6% 20%;
+    --ring: 199 88% 52%;
+    --sidebar-background: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 199 88% 52%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 6% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 6% 20%;
+    --sidebar-ring: 199 88% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
